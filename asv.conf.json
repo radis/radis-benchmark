@@ -30,7 +30,7 @@
 
     // List of branches to benchmark. If not provided, defaults to "master"
     // (for git) or "default" (for mercurial).
-    // "branches": ["master"], // for git
+    "branches": ["master", "support/0.9.18", "support/0.9.19", "support/0.9.21", "support/0.9.22"], // for git
     // "branches": ["default"],    // for mercurial
 
     // The DVCS being used.  If not set, it will be automatically
@@ -51,11 +51,11 @@
     //"install_timeout": 600,
 
     // the base URL to show a commit for the project.
-    // "show_commit_url": "http://github.com/owner/project/commit/",
+    "show_commit_url": "http://github.com/radis/radis/commit/",
 
     // The Pythons you'd like to test against.  If not provided, defaults
     // to the current version of Python used to run `asv`.
-    // "pythons": ["2.7", "3.6"],
+    "pythons": ["3.6"],
 
     // The list of conda channel names to be searched for benchmark
     // dependency packages in the specified order
