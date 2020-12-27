@@ -1,2 +1,5 @@
 radis/*
 results/*
+env/*
+html/*
+benchmarks/__pycache__/*
