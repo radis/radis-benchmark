@@ -2,6 +2,8 @@
 
 Performance Benchmarks for [RADIS](http://radis.github.io/) 
 
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://radis.github.io/radis-benchmark/)
+
 ## Automatic benchmarks 
 
 Benchmarks can be found in [benchmarks/benchmarks.py](./benchmarks/benchmarks.py)
