@@ -116,6 +116,7 @@ class CO2_HITEMP:
 
     Based on the test in :py:func:`radis.test.lbl.test_factory.test_spec_generation`
     """
+    timeout = 3600
 
     def setup(self):
         self.test_options = opt = {
