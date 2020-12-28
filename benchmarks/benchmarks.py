@@ -68,52 +68,51 @@ class CO2_HITRAN:
                 ]
             }
         )
-
-        try:
-            sf.fetch_databank()
-        except ValueError as err:
-            if "generated with a future version" in str(err) and "tempfile" in str(err):
-                # Clean problematic cache files
-                # Note @dev : in 0.9.25 fetch_astroquery() doesnt use the use_cache
-                # parameter from SpectrumFactory... Too bad, else we could have simply
-                # used the 'regen' value
-                from astroquery.hitran import Hitran
+        
+        from radis.db.utils import getFile
+        def get_astroquery_cache(iso):
+            from astroquery.hitran import Hitran
+            try:
                 from radis.io.query import CACHE_FILE_NAME
+            except ImportError:
+                CACHE_FILE_NAME = 'tempfile_{molecule}_{isotope}_{wmin:.2f}_{wmax:.2f}.h5'
+            fcache = join(
+                Hitran.cache_location,
+                CACHE_FILE_NAME.format(
+                    **{
+                        "molecule": opt["molecule"],
+                        "isotope": iso,
+                        "wmin": sf.params.wavenum_min_calc,
+                        "wmax": sf.params.wavenum_max_calc,
+                    }
+                )
+            )
+            return fcache
 
-                for iso in sf._get_isotope_list(molecule=opt["molecule"]):
-                    fcache = join(
-                        Hitran.cache_location,
-                        CACHE_FILE_NAME.format(
-                            **{
-                                "molecule": opt["molecule"],
-                                "isotope": iso,
-                                "wmin": sf.params.wavenum_min_calc,
-                                "wmax": sf.params.wavenum_max_calc,
-                            }
-                        ),
-                    )
-                    printm("> ", err)
-                    printm("Backward compatibility : regenerating cache file", fcache)
-                    os.remove(fcache)
-
-        # 2nd run to check there are no problems with Energy levels cache files
-        # ... Note @dev : as of 0.9.26 encountering a cache file generated with a future version
-        # ... raises an error with no option to automatically regenerate the cache file
-
-        try:
-            sf.fetch_databank()
-        except ValueError as err:
-            if "generated with a future version" in str(
-                err
-            ) and "molecules_data" in str(err):
-                # Clean problematic cache files
-                printm("> ", err)
-                printm("Backward compatibility : regenerating energy levels file")
-                sf.params.lvl_use_cached = "regen"
+        for attempt in range(15):  # max number of failed cache files
+            try:
                 sf.fetch_databank()
-
-        # Initial calculation to make sure cache files are properly working
-        calc_spectrum(**self.test_options)
+            except ValueError as err:
+                if "generated with a future version" in str(err):
+                    for fcache in [
+                        get_astroquery_cache(iso=1),
+                        get_astroquery_cache(iso=2),
+                        get_astroquery_cache(iso=3),
+                        getFile(join("CO2", "molecules_data_CO2_iso1_X_levels.h5")),
+                        getFile(join("CO2", "molecules_data_CO2_iso2_X_levels.h5")),
+                        getFile(join("CO2", "co2_iso1_levels.h5")), # old (0.9.19?) syntax
+                        getFile(join("CO2", "co2_iso2_levels.h5")), # old (0.9.19?) syntax
+                    ]:
+                        if fcache in str(err):
+                            printm(
+                                "Backward compatibility : regenerating cache file",
+                                fcache,
+                            )
+                            os.remove(fcache)
+                else:
+                    raise
+            else:
+                break
 
     def time_noneq_spectrum(self):
 
@@ -195,6 +194,8 @@ class CO2_HITEMP:
                         opt["path"][2] + ".h5",
                         getFile(join("CO2", "molecules_data_CO2_iso1_X_levels.h5")),
                         getFile(join("CO2", "molecules_data_CO2_iso2_X_levels.h5")),
+                        getFile(join("CO2", "co2_iso1_levels.h5")), # old (0.9.19?) syntax
+                        getFile(join("CO2", "co2_iso2_levels.h5")), # old (0.9.19?) syntax
                     ]:
                         if fcache in str(err):
                             printm(
