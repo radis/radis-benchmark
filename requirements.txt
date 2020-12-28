@@ -1,0 +1,4 @@
+# Python libraries that should be installed
+asv
+psutil
+radis  # actually installed automatically with `asv run HASHFILE:tested_commit_hash.txt -e`
