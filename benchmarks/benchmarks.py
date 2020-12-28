@@ -2,9 +2,20 @@
 # See "Writing benchmarks" in the asv docs for more information.
 
 import os
-from os.path import join
+import re
+import sys
+
+from numpy import floor, log10, round
+from psutil import virtual_memory
+
 from radis import SpectrumFactory, calc_spectrum, get_version
+from radis.lbl.factory import _generate_broadening_range
 from radis.misc.printer import printm
+
+
+def digits(x, n=1):
+    """ Round x to n digits """
+    return round(x * 10 ** (-floor(log10(x))), n - 1) * 10 ** (floor(log10(x)))
 
 
 class CO2_HITRAN:
@@ -68,49 +79,25 @@ class CO2_HITRAN:
                 ]
             }
         )
-        
-        from radis.db.utils import getFile
-        def get_astroquery_cache(iso):
-            from astroquery.hitran import Hitran
-            try:
-                from radis.io.query import CACHE_FILE_NAME
-            except ImportError:
-                CACHE_FILE_NAME = 'tempfile_{molecule}_{isotope}_{wmin:.2f}_{wmax:.2f}.h5'
-            fcache = join(
-                Hitran.cache_location,
-                CACHE_FILE_NAME.format(
-                    **{
-                        "molecule": opt["molecule"],
-                        "isotope": iso,
-                        "wmin": sf.params.wavenum_min_calc,
-                        "wmax": sf.params.wavenum_max_calc,
-                    }
-                )
-            )
-            return fcache
 
         for attempt in range(15):  # max number of failed cache files
             try:
                 sf.fetch_databank()
             except ValueError as err:
                 if "generated with a future version" in str(err):
-                    for fcache in [
-                        get_astroquery_cache(iso=1),
-                        get_astroquery_cache(iso=2),
-                        get_astroquery_cache(iso=3),
-                        getFile(join("CO2", "molecules_data_CO2_iso1_X_levels.h5")),
-                        getFile(join("CO2", "molecules_data_CO2_iso2_X_levels.h5")),
-                        getFile(join("CO2", "co2_iso1_levels.h5")), # old (0.9.19?) syntax
-                        getFile(join("CO2", "co2_iso2_levels.h5")), # old (0.9.19?) syntax
-                    ]:
-                        if fcache in str(err):
-                            printm(
-                                "Backward compatibility : regenerating cache file",
-                                fcache,
-                            )
-                            os.remove(fcache)
-                else:
-                    raise
+                    # Get failing cache file :
+                    fcache = re.search(
+                        r"(?<=Cache file \().*(?=\) generated)", str(err)
+                    )
+                    if fcache is not None:
+                        fcache = fcache.group()
+                        printm(
+                            "Backward compatibility : regenerating cache file",
+                            fcache,
+                        )
+                        os.remove(fcache)
+                        continue
+                raise
             else:
                 break
 
@@ -139,6 +126,8 @@ class CO2_HITEMP:
             "verbose": 3,
             "wstep": 0.01,
             "cutoff": 0,
+            "chunksize": "auto",
+            "broadening_max_width": 10,
             "path": [
                 r"D:\Dropbox\Data ECP\14_Databases\CDSD-HITEMP\cdsd_hitemp_07",
                 r"D:\Dropbox\Data ECP\14_Databases\CDSD-HITEMP\cdsd_hitemp_08",
@@ -147,6 +136,19 @@ class CO2_HITEMP:
             "use_cached": True,
             "dbformat": "cdsd-hitemp",
         }
+
+        # Chunksize : number of lines to proceed at the same time (doestn apply if LDM)
+        if opt["chunksize"] == "auto":
+            opt["chunksize"] = digits(
+                virtual_memory().available
+                / sys.getsizeof(
+                    _generate_broadening_range(
+                        opt["wstep"], opt["broadening_max_width"]
+                    )
+                ),
+                n=1,
+            )
+            printm("chunksize auto : ", opt["chunksize"])
 
         # Backward compatibility
         # ----------------------
@@ -158,7 +160,6 @@ class CO2_HITEMP:
             opt["dbformat"] = "cdsd"
 
         # Also fix problems with cache files :
-        from radis.db.utils import getFile
 
         # First run to check there are no problems with Line database cache-files
         # ... Note @dev : as of 0.9.26 encountering a cache file generated with a future version
@@ -188,23 +189,19 @@ class CO2_HITEMP:
                 )
             except ValueError as err:
                 if "generated with a future version" in str(err):
-                    for fcache in [
-                        opt["path"][0] + ".h5",
-                        opt["path"][1] + ".h5",
-                        opt["path"][2] + ".h5",
-                        getFile(join("CO2", "molecules_data_CO2_iso1_X_levels.h5")),
-                        getFile(join("CO2", "molecules_data_CO2_iso2_X_levels.h5")),
-                        getFile(join("CO2", "co2_iso1_levels.h5")), # old (0.9.19?) syntax
-                        getFile(join("CO2", "co2_iso2_levels.h5")), # old (0.9.19?) syntax
-                    ]:
-                        if fcache in str(err):
-                            printm(
-                                "Backward compatibility : regenerating cache file",
-                                fcache,
-                            )
-                            os.remove(fcache)
-                else:
-                    raise
+                    # Get failing cache file :
+                    fcache = re.search(
+                        r"(?<=Cache file \().*(?=\) generated)", str(err)
+                    )
+                    if fcache is not None:
+                        fcache = fcache.group()
+                        printm(
+                            "Backward compatibility : regenerating cache file",
+                            fcache,
+                        )
+                        os.remove(fcache)
+                        continue
+                raise
             else:
                 break
 
@@ -212,6 +209,7 @@ class CO2_HITEMP:
         # Note @ dev:  can't use calc_spectrum directly because it cannot
         # read a custom database
         opt = self.test_options
+
         sf = SpectrumFactory(
             **{
                 k: opt[k]
@@ -223,6 +221,7 @@ class CO2_HITEMP:
                     "wstep",
                     "cutoff",
                     "verbose",
+                    "chunksize",
                 ]
             }
         )
@@ -248,6 +247,7 @@ class CO2_HITEMP:
                     "wstep",
                     "cutoff",
                     "verbose",
+                    "chunksize",
                 ]
             }
         )
@@ -275,6 +275,7 @@ class CO2_HITEMP:
                     "wstep",
                     "cutoff",
                     "verbose",
+                    "chunksize",
                 ]
             }
         )
@@ -300,6 +301,7 @@ class CO2_HITEMP:
                     "wstep",
                     "cutoff",
                     "verbose",
+                    "chunksize",
                 ]
             }
         )
