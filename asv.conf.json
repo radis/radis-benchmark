@@ -7,7 +7,7 @@
     "project": "radis",
 
     // The project's homepage
-    "project_url": "https://radis.github.io/",
+    "project_url": "https://github.com/radis/radis-benchmark",
 
     // The URL or local path of the source code repository for the
     // project being benchmarked
