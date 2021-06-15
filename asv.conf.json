@@ -45,6 +45,7 @@
     // determined by looking for tools on the PATH environment
     // variable.
     "environment_type": "conda",
+    //"conda_environment_file": "environment.yml",   // EP :try to find radis/environment.yml. Didn't work?
 
     // timeout in seconds for installing any dependencies in environment
     // defaults to 10 min
@@ -55,7 +56,7 @@
 
     // The Pythons you'd like to test against.  If not provided, defaults
     // to the current version of Python used to run `asv`.
-    "pythons": ["3.6"],
+    //"pythons": ["3.6"],
 
     // The list of conda channel names to be searched for benchmark
     // dependency packages in the specified order
@@ -71,11 +72,13 @@
     // pip (with all the conda available packages installed first,
     // followed by the pip installed packages).
     //
-    // "matrix": {
+    "matrix": {
+        "psutil": [],
+        "Cython": []
     //     "numpy": ["1.6", "1.7"],
     //     "six": ["", null],        // test with and without six installed
     //     "pip+emcee": [""],   // emcee is only available for install with pip.
-    // },
+    },
 
     // Combinations of libraries/python versions can be excluded/included
     // from the set to test. Each entry is a dictionary containing additional
