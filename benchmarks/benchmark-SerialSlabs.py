@@ -31,10 +31,7 @@ class LineOfSight_Benchmark:
                           wstep=0.01,
                           verbose=False,
                           )
-        # s.apply_slit(0.5, 'nm')       # simulate an experimental slit
-        # s.plot('radiance')
-
-        self.s_list =  [s.copy()]*2000
+        self.s_list =  [s.copy()]*100
 
     def time_SerialSlabs(self):
 
