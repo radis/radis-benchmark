@@ -20,7 +20,7 @@ asv run develop^!
 Run the benchmarks for all [tested versions (update file if necessary)](./tested_radis_versions.txt):
 
 ```
-asv run HASHFILE::tested_radis_versions.txt -e --skip-existing-successful
+asv run HASHFILE:tested_radis_versions.txt -e --skip-existing-successful
 asv publish
 asv preview
 ``` 
