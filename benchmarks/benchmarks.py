@@ -130,9 +130,9 @@ class CO2_HITEMP:
             "chunksize": "auto",
             "broadening_max_width": 10,
             "path": [
-                r"D:\Dropbox\Data ECP\14_Databases\CDSD-HITEMP\cdsd_hitemp_07",
-                r"D:\Dropbox\Data ECP\14_Databases\CDSD-HITEMP\cdsd_hitemp_08",
-                r"D:\Dropbox\Data ECP\14_Databases\CDSD-HITEMP\cdsd_hitemp_09",
+                r"/home/gaganaryan/cdsd-hitemp/cdsd_hitemp_07",
+                r"/home/gaganaryan/cdsd-hitemp/cdsd_hitemp_08",
+                r"/home/gaganaryan/cdsd-hitemp/cdsd_hitemp_09",
             ],
             "use_cached": True,
             "dbformat": "cdsd-hitemp",
