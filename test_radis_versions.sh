@@ -1,0 +1,11 @@
+asv run 0.9.18b^
+asv run 0.9.19b^
+asv run 0.9.21b^
+asv run 0.9.22b^
+asv run 0.9.23^
+asv run 0.9.25^
+asv run 0.9.26^
+asv run 0.9.27^
+asv run 0.9.28^
+asv run 0.9.29^
+asv run 0.10.2^

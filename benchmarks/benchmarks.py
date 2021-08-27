@@ -158,7 +158,7 @@ class CO2_HITEMP:
         if version < parse("0.10.1"):
             # "broadening_max_width" changed to 'truncation' & neighbour_lines
             opt["broadening_max_widith"] = opt["truncation"]
-            del opt["truncation"]
+            # del opt["truncation"]
             del opt["neighbour_lines"]
             
         if version < parse("0.9.21"):
