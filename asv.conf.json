@@ -30,6 +30,7 @@
 
     // List of branches to benchmark. If not provided, defaults to "master"
     // (for git) or "default" (for mercurial).
+    // Note @EP : add "develop" for testing, but do not publish it.
     "branches": ["master", "support/0.9.18", "support/0.9.19", "support/0.9.21", "support/0.9.22"], // for git
     // "branches": ["default"],    // for mercurial
 
