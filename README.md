@@ -35,3 +35,5 @@ Benchmarks are run against major tagged versions of RADIS. The list of version c
 ## Manual performance tests :
 
 - [CPU vs GPU calculations](./manual_benchmarks/cpu_gpu_benchmark.ipynb)  by @pkj-m
+
+- (external repo) [GSOC 2021 Benchmark](https://github.com/anandxkumar/Benchmark_Visualization_GSoC_2021) by @anandxkumar
