@@ -2,6 +2,9 @@
 
 Performance Benchmarks for [RADIS](http://radis.github.io/) 
 
+[![image](https://github.com/radis/radis-benchmark/assets/16088743/9b455793-17b4-4418-b761-3b140ddffb9f)](https://radis.github.io/radis-benchmark/)
+
+
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://radis.github.io/radis-benchmark/)
 
 ## Automatic benchmarks 
